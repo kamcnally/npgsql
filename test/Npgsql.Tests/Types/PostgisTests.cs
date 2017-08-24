@@ -30,11 +30,11 @@ using NUnit.Framework;
 
 namespace Npgsql.Tests.Types
 {
-    class Postgis2DTests : TestBase
+    class PostgisTests : TestBase
     {
         public class TestAtt
         {
-            public PostgisGeometry<CoordinateXY> Geom;
+            public PostgisGeometry Geom;
             public string SQL;
         }
 
@@ -108,6 +108,210 @@ namespace Npgsql.Tests.Types
                     })
                 }),
                 SQL = "st_collect(st_makepoint(1,1),st_collect(st_makepoint(1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1),st_makepoint(2,2),st_makepoint(3,3),st_makepoint(1,1)])))))"
+            },
+            new TestAtt {
+                Geom = new PostgisPointZ(1D, 2500D, 42.3D),
+                SQL = "st_makepoint(1,2500,42.3)"
+            },
+            new TestAtt {
+                Geom = new PostgisPolygonZ(new[] { new[] {
+                    new CoordinateXYZ(1d,1d,1d),
+                    new CoordinateXYZ(2d,2d,2d),
+                    new CoordinateXYZ(3d,3d,3d),
+                    new CoordinateXYZ(1d,1d,1d)
+                }}),
+                SQL = "st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1),st_makepoint(2,2,2),st_makepoint(3,3,3),st_makepoint(1,1,1)]))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiPointZ(new[] { new CoordinateXYZ(1D, 1D, 1D) }),
+                SQL = "st_multi(st_makepoint(1,1,1))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiLineStringZ(new[] {
+                    new PostgisLineStringZ(new[] {
+                        new CoordinateXYZ(1D, 1D, 1D),
+                        new CoordinateXYZ(1D, 2500D, 2D)
+                    })
+                }),
+                SQL = "st_multi(st_makeline(st_makepoint(1,1,1),st_makepoint(1,2500,2)))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiPolygonZ(new[] {
+                    new PostgisPolygonZ(new[] { new[] {
+                        new CoordinateXYZ(1d,1d,1d),
+                        new CoordinateXYZ(2d,2d,2d),
+                        new CoordinateXYZ(3d,3d,3d),
+                        new CoordinateXYZ(1d,1d,1d)
+                    }})
+                }),
+                SQL = "st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1),st_makepoint(2,2,2),st_makepoint(3,3,3),st_makepoint(1,1,1)])))"
+            },
+            new TestAtt {
+                Geom = new PostgisGeometryCollectionZ(new PostgisGeometry<CoordinateXYZ>[] {
+                    new PostgisPointZ(1,1,1),
+                    new PostgisMultiPolygonZ(new[] {
+                        new PostgisPolygonZ(new[] { new[] {
+                            new CoordinateXYZ(1d,1d,1d),
+                            new CoordinateXYZ(2d,2d,2d),
+                            new CoordinateXYZ(3d,3d,3d),
+                            new CoordinateXYZ(1d,1d,1d)
+                        }})
+                    })
+                }),
+                SQL = "st_collect(st_makepoint(1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1),st_makepoint(2,2,2),st_makepoint(3,3,3),st_makepoint(1,1,1)]))))"
+            },
+            new TestAtt {
+                Geom = new PostgisGeometryCollectionZ(new PostgisGeometry<CoordinateXYZ>[] {
+                    new PostgisPointZ(1,1,1),
+                    new PostgisGeometryCollectionZ(new PostgisGeometry<CoordinateXYZ>[] {
+                        new PostgisPointZ(1,1,1),
+                        new PostgisMultiPolygonZ(new[] {
+                            new PostgisPolygonZ(new[] { new[] {
+                                new CoordinateXYZ(1d,1d,1d),
+                                new CoordinateXYZ(2d,2d,2d),
+                                new CoordinateXYZ(3d,3d,3d),
+                                new CoordinateXYZ(1d,1d,1d)
+                            }})
+                        })
+                    })
+                }),
+                SQL = "st_collect(st_makepoint(1,1,1),st_collect(st_makepoint(1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1),st_makepoint(2,2,2),st_makepoint(3,3,3),st_makepoint(1,1,1)])))))"
+            },
+            new TestAtt {
+                Geom = new PostgisPointM(1D, 2500D, 42.3D),
+                SQL = "st_makepointm(1,2500,42.3)"
+            },
+            new TestAtt {
+                Geom = new PostgisPolygonM(new[] { new[] {
+                    new CoordinateXYM(1d,1d,1d),
+                    new CoordinateXYM(2d,2d,2d),
+                    new CoordinateXYM(3d,3d,3d),
+                    new CoordinateXYM(1d,1d,1d)
+                }}),
+                SQL = "st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)]))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiPointM(new[] { new CoordinateXYM(1D, 1D, 1D) }),
+                SQL = "st_multi(st_makepointm(1,1,1))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiLineStringM(new[] {
+                    new PostgisLineStringM(new[] {
+                        new CoordinateXYM(1D, 1D, 1D),
+                        new CoordinateXYM(1D, 2500D, 2D)
+                    })
+                }),
+                SQL = "st_multi(st_makeline(st_makepointm(1,1,1),st_makepointm(1,2500,2)))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiPolygonM(new[] {
+                    new PostgisPolygonM(new[] { new[] {
+                        new CoordinateXYM(1d,1d,1d),
+                        new CoordinateXYM(2d,2d,2d),
+                        new CoordinateXYM(3d,3d,3d),
+                        new CoordinateXYM(1d,1d,1d)
+                    }})
+                }),
+                SQL = "st_multi(st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)])))"
+            },
+            new TestAtt {
+                Geom = new PostgisGeometryCollectionM(new PostgisGeometry<CoordinateXYM>[] {
+                    new PostgisPointM(1,1,1),
+                    new PostgisMultiPolygonM(new[] {
+                        new PostgisPolygonM(new[] { new[] {
+                            new CoordinateXYM(1d,1d,1d),
+                            new CoordinateXYM(2d,2d,2d),
+                            new CoordinateXYM(3d,3d,3d),
+                            new CoordinateXYM(1d,1d,1d)
+                        }})
+                    })
+                }),
+                SQL = "st_collect(st_makepointm(1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)]))))"
+            },
+            new TestAtt {
+                Geom = new PostgisGeometryCollectionM(new PostgisGeometry<CoordinateXYM>[] {
+                    new PostgisPointM(1,1,1),
+                    new PostgisGeometryCollectionM(new PostgisGeometry<CoordinateXYM>[] {
+                        new PostgisPointM(1,1,1),
+                        new PostgisMultiPolygonM(new[] {
+                            new PostgisPolygonM(new[] { new[] {
+                                new CoordinateXYM(1d,1d,1d),
+                                new CoordinateXYM(2d,2d,2d),
+                                new CoordinateXYM(3d,3d,3d),
+                                new CoordinateXYM(1d,1d,1d)
+                            }})
+                        })
+                    })
+                }),
+                SQL = "st_collect(st_makepointm(1,1,1),st_collect(st_makepointm(1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)])))))"
+            },
+            new TestAtt {
+                Geom = new PostgisPointZM(1D, 2500D, 42.3D, 8D),
+                SQL = "st_makepoint(1,2500,42.3,8)"
+            },
+            new TestAtt {
+                Geom = new PostgisPolygonZM(new[] { new[] {
+                    new CoordinateXYZM(1d,1d,1d,1d),
+                    new CoordinateXYZM(2d,2d,2d,2d),
+                    new CoordinateXYZM(3d,3d,3d,3d),
+                    new CoordinateXYZM(1d,1d,1d,1d)
+                }}),
+                SQL = "st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1,1),st_makepoint(2,2,2,2),st_makepoint(3,3,3,3),st_makepoint(1,1,1,1)]))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiPointZM(new[] { new CoordinateXYZM(1D, 1D, 1D, 1D) }),
+                SQL = "st_multi(st_makepoint(1,1,1,1))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiLineStringZM(new[] {
+                    new PostgisLineStringZM(new[] {
+                        new CoordinateXYZM(1D, 1D, 1D, 1D),
+                        new CoordinateXYZM(1D, 2500D, 2D, 5D)
+                    })
+                }),
+                SQL = "st_multi(st_makeline(st_makepoint(1,1,1,1),st_makepoint(1,2500,2,5)))"
+            },
+            new TestAtt {
+                Geom = new PostgisMultiPolygonZM(new[] {
+                    new PostgisPolygonZM(new[] { new[] {
+                        new CoordinateXYZM(1d,1d,1d,1d),
+                        new CoordinateXYZM(2d,2d,2d,2d),
+                        new CoordinateXYZM(3d,3d,3d,3d),
+                        new CoordinateXYZM(1d,1d,1d,1d)
+                    }})
+                }),
+                SQL = "st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1,1),st_makepoint(2,2,2,2),st_makepoint(3,3,3,3),st_makepoint(1,1,1,1)])))"
+            },
+            new TestAtt {
+                Geom = new PostgisGeometryCollectionZM(new PostgisGeometry<CoordinateXYZM>[] {
+                    new PostgisPointZM(1,1,1,1),
+                    new PostgisMultiPolygonZM(new[] {
+                        new PostgisPolygonZM(new[] { new[] {
+                            new CoordinateXYZM(1d,1d,1d,1d),
+                            new CoordinateXYZM(2d,2d,2d,2d),
+                            new CoordinateXYZM(3d,3d,3d,3d),
+                            new CoordinateXYZM(1d,1d,1d,1d)
+                        }})
+                    })
+                }),
+                SQL = "st_collect(st_makepoint(1,1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1,1),st_makepoint(2,2,2,2),st_makepoint(3,3,3,3),st_makepoint(1,1,1,1)]))))"
+            },
+            new TestAtt {
+                Geom = new PostgisGeometryCollectionZM(new PostgisGeometry<CoordinateXYZM>[] {
+                    new PostgisPointZM(1,1,1,1),
+                    new PostgisGeometryCollectionZM(new PostgisGeometry<CoordinateXYZM>[] {
+                        new PostgisPointZM(1,1,1,1),
+                        new PostgisMultiPolygonZM(new[] {
+                            new PostgisPolygonZM(new[] { new[] {
+                                new CoordinateXYZM(1d,1d,1d,1d),
+                                new CoordinateXYZM(2d,2d,2d,2d),
+                                new CoordinateXYZM(3d,3d,3d,3d),
+                                new CoordinateXYZM(1d,1d,1d,1d)
+                            }})
+                        })
+                    })
+                }),
+                SQL = "st_collect(st_makepoint(1,1,1,1),st_collect(st_makepoint(1,1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepoint(1,1,1,1),st_makepoint(2,2,2,2),st_makepoint(3,3,3,3),st_makepoint(1,1,1,1)])))))"
             }
         };
 
@@ -169,7 +373,7 @@ namespace Npgsql.Tests.Types
                 cmd.CommandText = "Select st_setsrid(" + a.SQL + ",3942)";
                 var p = cmd.ExecuteScalar();
                 Assert.IsTrue(p.Equals(a.Geom));
-                Assert.IsTrue((p as PostgisGeometry<CoordinateXY>).SRID == 3942);
+                Assert.IsTrue((p as PostgisGeometry).SRID == 3942);
             }
         }
 
