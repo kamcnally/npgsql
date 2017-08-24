@@ -173,7 +173,7 @@ namespace NpgsqlTypes
     /// <summary>
     /// A structure representing a XYM double precision floating point coordinate;
     /// </summary>
-    public class CoordinateXYM : Coordinate2D, IEquatable<CoordinateXYM>
+    public class Coordinate3DM : Coordinate2D, IEquatable<Coordinate3DM>
     {
         /// <summary>
         /// M coordinate.
@@ -186,10 +186,10 @@ namespace NpgsqlTypes
         /// <param name="x">X coordinate</param>
         /// <param name="y">Y coordinate</param>
         /// <param name="m">M coordinate</param>
-        public CoordinateXYM(double x, double y, double m) : base(x, y) { M = m; }
+        public Coordinate3DM(double x, double y, double m) : base(x, y) { M = m; }
 
         // ReSharper disable CompareOfFloatsByEqualityOperator
-        public bool Equals(CoordinateXYM other)
+        public bool Equals(Coordinate3DM other)
             => M == other.M && base.Equals(other);
         // ReSharper restore CompareOfFloatsByEqualityOperator
 
@@ -197,12 +197,12 @@ namespace NpgsqlTypes
             => M.GetHashCode() ^ base.GetHashCode();
 
         public override bool Equals([CanBeNull] object obj)
-            => obj is CoordinateXYM && Equals((CoordinateXYM)obj);
+            => obj is Coordinate3DM && Equals((Coordinate3DM)obj);
 
-        public static bool operator ==(CoordinateXYM left, CoordinateXYM right)
+        public static bool operator ==(Coordinate3DM left, Coordinate3DM right)
             => Equals(left, right);
 
-        public static bool operator !=(CoordinateXYM left, CoordinateXYM right)
+        public static bool operator !=(Coordinate3DM left, Coordinate3DM right)
             => !Equals(left, right);
     }
 
@@ -356,16 +356,16 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents an Postgis 3D Point with M axis
     /// </summary>
-    public class PostgisPointM : PostgisPoint<CoordinateXYM>, IEquatable<PostgisPointM>
+    public class PostgisPointM : PostgisPoint<Coordinate3DM>, IEquatable<PostgisPointM>
     {
-        CoordinateXYM _coord;
+        Coordinate3DM _coord;
 
         internal override WkbIdentifier Identifier => WkbIdentifier.PointM;
         protected override int GetLenHelper() => 24;
 
         public PostgisPointM(double x, double y, double m)
         {
-            _coord = new CoordinateXYM(x, y, m);
+            _coord = new Coordinate3DM(x, y, m);
         }
 
         public double X => _coord.X;
@@ -509,17 +509,17 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a 3DM LineString
     /// </summary>
-    public class PostgisLineStringM : PostgisLineString<CoordinateXYM>
+    public class PostgisLineStringM : PostgisLineString<Coordinate3DM>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.LineStringM;
         protected override int GetLenHelper() => 4 + _points.Length * 24;
 
-        public PostgisLineStringM(IEnumerable<CoordinateXYM> points)
+        public PostgisLineStringM(IEnumerable<Coordinate3DM> points)
         {
             _points = points.ToArray();
         }
 
-        public PostgisLineStringM(CoordinateXYM[] points)
+        public PostgisLineStringM(Coordinate3DM[] points)
         {
             _points = points;
         }
@@ -636,17 +636,17 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents an Postgis 3DM Polygon.
     /// </summary>
-    public class PostgisPolygonM : PostgisPolygon<CoordinateXYM>
+    public class PostgisPolygonM : PostgisPolygon<Coordinate3DM>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.PolygonM;
         protected override int GetLenHelper() => 4 + _rings.Length * 4 + TotalPointCount * 24;
 
-        public PostgisPolygonM(CoordinateXYM[][] rings)
+        public PostgisPolygonM(Coordinate3DM[][] rings)
         {
             _rings = rings;
         }
 
-        public PostgisPolygonM(IEnumerable<IEnumerable<CoordinateXYM>> rings)
+        public PostgisPolygonM(IEnumerable<IEnumerable<Coordinate3DM>> rings)
         {
             _rings = rings.Select(x => x.ToArray()).ToArray();
         }
@@ -767,24 +767,24 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a Postgis 3DM MultiPoint
     /// </summary>
-    public class PostgisMultiPointM : PostgisMultiPoint<CoordinateXYM>
+    public class PostgisMultiPointM : PostgisMultiPoint<Coordinate3DM>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.MultiPointM;
 
         //each point of a multipoint is a postgispoint, not a building block point.
         protected override int GetLenHelper() => 4 + _points.Length * 29;
 
-        public PostgisMultiPointM(CoordinateXYM[] points)
+        public PostgisMultiPointM(Coordinate3DM[] points)
         {
             _points = points;
         }
 
-        public PostgisMultiPointM(IEnumerable<PostgisPoint<CoordinateXYM>> points)
+        public PostgisMultiPointM(IEnumerable<PostgisPoint<Coordinate3DM>> points)
         {
-            _points = points.Select(x => x.Coordinate).OfType<CoordinateXYM>().ToArray();
+            _points = points.Select(x => x.Coordinate).OfType<Coordinate3DM>().ToArray();
         }
 
-        public PostgisMultiPointM(IEnumerable<CoordinateXYM> points)
+        public PostgisMultiPointM(IEnumerable<Coordinate3DM> points)
         {
             _points = points.ToArray();
         }
@@ -927,9 +927,9 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a Postgis 3DM MultiLineString
     /// </summary>
-    public sealed class PostgisMultiLineStringM : PostgisMultiLineString<CoordinateXYM>
+    public sealed class PostgisMultiLineStringM : PostgisMultiLineString<Coordinate3DM>
     {
-        internal PostgisMultiLineStringM(CoordinateXYM[][] pointArray)
+        internal PostgisMultiLineStringM(Coordinate3DM[][] pointArray)
         {
             _lineStrings = new PostgisLineStringM[pointArray.Length];
             for (var i = 0; i < pointArray.Length; i++)
@@ -948,7 +948,7 @@ namespace NpgsqlTypes
             _lineStrings = linestrings.ToArray();
         }
 
-        public PostgisMultiLineStringM(IEnumerable<IEnumerable<CoordinateXYM>> pointList)
+        public PostgisMultiLineStringM(IEnumerable<IEnumerable<Coordinate3DM>> pointList)
         {
             _lineStrings = pointList.Select(x => new PostgisLineStringM(x)).ToArray();
         }
@@ -1081,7 +1081,7 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a Postgis 3DM MultiPolygon.
     /// </summary>
-    public class PostgisMultiPolygonM : PostgisMultiPolygon<CoordinateXYM>
+    public class PostgisMultiPolygonM : PostgisMultiPolygon<Coordinate3DM>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.MultiPolygonM;
 
@@ -1095,7 +1095,7 @@ namespace NpgsqlTypes
             _polygons = polygons.ToArray();
         }
 
-        public PostgisMultiPolygonM(IEnumerable<IEnumerable<IEnumerable<CoordinateXYM>>> ringList)
+        public PostgisMultiPolygonM(IEnumerable<IEnumerable<IEnumerable<Coordinate3DM>>> ringList)
         {
             _polygons = ringList.Select(x => new PostgisPolygonM(x)).ToArray();
         }
@@ -1210,16 +1210,16 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a collection of 3DM Postgis feature.
     /// </summary>
-    public class PostgisGeometryCollectionM : PostgisGeometryCollection<CoordinateXYM>
+    public class PostgisGeometryCollectionM : PostgisGeometryCollection<Coordinate3DM>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.GeometryCollectionM;
 
-        public PostgisGeometryCollectionM(PostgisGeometry<CoordinateXYM>[] geometries)
+        public PostgisGeometryCollectionM(PostgisGeometry<Coordinate3DM>[] geometries)
         {
             _geometries = geometries;
         }
 
-        public PostgisGeometryCollectionM(IEnumerable<PostgisGeometry<CoordinateXYM>> geometries)
+        public PostgisGeometryCollectionM(IEnumerable<PostgisGeometry<Coordinate3DM>> geometries)
         {
             _geometries = geometries.ToArray();
         }

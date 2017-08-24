@@ -183,22 +183,22 @@ namespace Npgsql.Tests.Types
             },
             new TestAtt {
                 Geom = new PostgisPolygonM(new[] { new[] {
-                    new CoordinateXYM(1d,1d,1d),
-                    new CoordinateXYM(2d,2d,2d),
-                    new CoordinateXYM(3d,3d,3d),
-                    new CoordinateXYM(1d,1d,1d)
+                    new Coordinate3DM(1d,1d,1d),
+                    new Coordinate3DM(2d,2d,2d),
+                    new Coordinate3DM(3d,3d,3d),
+                    new Coordinate3DM(1d,1d,1d)
                 }}),
                 SQL = "st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)]))"
             },
             new TestAtt {
-                Geom = new PostgisMultiPointM(new[] { new CoordinateXYM(1D, 1D, 1D) }),
+                Geom = new PostgisMultiPointM(new[] { new Coordinate3DM(1D, 1D, 1D) }),
                 SQL = "st_multi(st_makepointm(1,1,1))"
             },
             new TestAtt {
                 Geom = new PostgisMultiLineStringM(new[] {
                     new PostgisLineStringM(new[] {
-                        new CoordinateXYM(1D, 1D, 1D),
-                        new CoordinateXYM(1D, 2500D, 2D)
+                        new Coordinate3DM(1D, 1D, 1D),
+                        new Coordinate3DM(1D, 2500D, 2D)
                     })
                 }),
                 SQL = "st_multi(st_makeline(st_makepointm(1,1,1),st_makepointm(1,2500,2)))"
@@ -206,39 +206,39 @@ namespace Npgsql.Tests.Types
             new TestAtt {
                 Geom = new PostgisMultiPolygonM(new[] {
                     new PostgisPolygonM(new[] { new[] {
-                        new CoordinateXYM(1d,1d,1d),
-                        new CoordinateXYM(2d,2d,2d),
-                        new CoordinateXYM(3d,3d,3d),
-                        new CoordinateXYM(1d,1d,1d)
+                        new Coordinate3DM(1d,1d,1d),
+                        new Coordinate3DM(2d,2d,2d),
+                        new Coordinate3DM(3d,3d,3d),
+                        new Coordinate3DM(1d,1d,1d)
                     }})
                 }),
                 SQL = "st_multi(st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)])))"
             },
             new TestAtt {
-                Geom = new PostgisGeometryCollectionM(new PostgisGeometry<CoordinateXYM>[] {
+                Geom = new PostgisGeometryCollectionM(new PostgisGeometry<Coordinate3DM>[] {
                     new PostgisPointM(1,1,1),
                     new PostgisMultiPolygonM(new[] {
                         new PostgisPolygonM(new[] { new[] {
-                            new CoordinateXYM(1d,1d,1d),
-                            new CoordinateXYM(2d,2d,2d),
-                            new CoordinateXYM(3d,3d,3d),
-                            new CoordinateXYM(1d,1d,1d)
+                            new Coordinate3DM(1d,1d,1d),
+                            new Coordinate3DM(2d,2d,2d),
+                            new Coordinate3DM(3d,3d,3d),
+                            new Coordinate3DM(1d,1d,1d)
                         }})
                     })
                 }),
                 SQL = "st_collect(st_makepointm(1,1,1),st_multi(st_makepolygon(st_makeline(ARRAY[st_makepointm(1,1,1),st_makepointm(2,2,2),st_makepointm(3,3,3),st_makepointm(1,1,1)]))))"
             },
             new TestAtt {
-                Geom = new PostgisGeometryCollectionM(new PostgisGeometry<CoordinateXYM>[] {
+                Geom = new PostgisGeometryCollectionM(new PostgisGeometry<Coordinate3DM>[] {
                     new PostgisPointM(1,1,1),
-                    new PostgisGeometryCollectionM(new PostgisGeometry<CoordinateXYM>[] {
+                    new PostgisGeometryCollectionM(new PostgisGeometry<Coordinate3DM>[] {
                         new PostgisPointM(1,1,1),
                         new PostgisMultiPolygonM(new[] {
                             new PostgisPolygonM(new[] { new[] {
-                                new CoordinateXYM(1d,1d,1d),
-                                new CoordinateXYM(2d,2d,2d),
-                                new CoordinateXYM(3d,3d,3d),
-                                new CoordinateXYM(1d,1d,1d)
+                                new Coordinate3DM(1d,1d,1d),
+                                new Coordinate3DM(2d,2d,2d),
+                                new Coordinate3DM(3d,3d,3d),
+                                new Coordinate3DM(1d,1d,1d)
                             }})
                         })
                     })
