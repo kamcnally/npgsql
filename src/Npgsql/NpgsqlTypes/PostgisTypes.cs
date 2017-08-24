@@ -10,7 +10,7 @@ using Npgsql;
 // ReSharper disable once CheckNamespace
 namespace NpgsqlTypes
 {
-    #pragma  warning disable 1591
+#pragma warning disable 1591
     /// <summary>
     /// Represents the identifier of the Well Known Binary representation of a geographical feature specified by the OGC.
     /// http://portal.opengeospatial.org/files/?artifact_id=13227 Chapter 6.3.2.7
@@ -57,7 +57,7 @@ namespace NpgsqlTypes
         /// </summary>
         /// <param name="x">X coordinate</param>
         /// <param name="y">Y coordinate</param>
-        public Coordinate2D(double x, double y) { X = x; Y = y;}
+        public Coordinate2D(double x, double y) { X = x; Y = y; }
 
         // ReSharper disable CompareOfFloatsByEqualityOperator
         public bool Equals(Coordinate2D c)
@@ -87,7 +87,7 @@ namespace NpgsqlTypes
         /// </summary>
         /// <returns></returns>
         protected abstract int GetLenHelper();
-        internal abstract WkbIdentifier Identifier { get;}
+        internal abstract WkbIdentifier Identifier { get; }
 
         internal int GetLen(bool includeSRID)
         {
@@ -166,8 +166,8 @@ namespace NpgsqlTypes
 
         public bool Equals([CanBeNull] PostgisLineString other)
         {
-            if (ReferenceEquals(other , null))
-                return false ;
+            if (ReferenceEquals(other, null))
+                return false;
 
             if (_points.Length != other._points.Length)
                 return false;
@@ -217,7 +217,7 @@ namespace NpgsqlTypes
             _rings = rings.Select(x => x.ToArray()).ToArray();
         }
 
-        public IEnumerator<IEnumerable<Coordinate2D>> GetEnumerator() 
+        public IEnumerator<IEnumerable<Coordinate2D>> GetEnumerator()
             => ((IEnumerable<IEnumerable<Coordinate2D>>)_rings).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -234,7 +234,7 @@ namespace NpgsqlTypes
                 if (_rings[i].Length != other._rings[i].Length)
                     return false;
                 for (var j = 0; j < _rings[i].Length; j++)
-                    if (!_rings[i][j].Equals (other._rings[i][j]))
+                    if (!_rings[i][j].Equals(other._rings[i][j]))
                         return false;
             }
             return true;
@@ -271,13 +271,13 @@ namespace NpgsqlTypes
         internal override WkbIdentifier Identifier => WkbIdentifier.MultiPoint;
 
         //each point of a multipoint is a postgispoint, not a building block point.
-        protected override int GetLenHelper() => 4 + _points.Length * 21; 
+        protected override int GetLenHelper() => 4 + _points.Length * 21;
 
         public IEnumerator<Coordinate2D> GetEnumerator() => ((IEnumerable<Coordinate2D>)_points).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public PostgisMultiPoint (Coordinate2D[] points)
+        public PostgisMultiPoint(Coordinate2D[] points)
         {
             _points = points;
         }
@@ -296,8 +296,8 @@ namespace NpgsqlTypes
 
         public bool Equals([CanBeNull] PostgisMultiPoint other)
         {
-            if (ReferenceEquals(other ,null))
-                return false ;
+            if (ReferenceEquals(other, null))
+                return false;
 
             if (_points.Length != other._points.Length)
                 return false;
@@ -373,7 +373,7 @@ namespace NpgsqlTypes
         public bool Equals([CanBeNull] PostgisMultiLineString other)
         {
             if (ReferenceEquals(other, null))
-                return false ;
+                return false;
 
             if (_lineStrings.Length != other._lineStrings.Length) return false;
             for (var i = 0; i < _lineStrings.Length; i++)

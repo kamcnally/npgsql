@@ -85,114 +85,114 @@ namespace Npgsql.TypeHandlers
         {
             switch (id)
             {
-            case WkbIdentifier.Point:
-                await buf.Ensure(16, async);
-                return new PostgisPoint(buf.ReadDouble(bo), buf.ReadDouble(bo));
-
-            case WkbIdentifier.LineString:
-            {
-                await buf.Ensure(4, async);
-                var points = new Coordinate2D[buf.ReadInt32(bo)];
-                for (var ipts = 0; ipts < points.Length; ipts++)
-                {
+                case WkbIdentifier.Point:
                     await buf.Ensure(16, async);
-                    points[ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
-                }
-                return new PostgisLineString(points);
-            }
+                    return new PostgisPoint(buf.ReadDouble(bo), buf.ReadDouble(bo));
 
-            case WkbIdentifier.Polygon:
-            {
-                await buf.Ensure(4, async);
-                var rings = new Coordinate2D[buf.ReadInt32(bo)][];
-
-                for (var irng = 0; irng < rings.Length; irng++)
-                {
-                    await buf.Ensure(4, async);
-                    rings[irng] = new Coordinate2D[buf.ReadInt32(bo)];
-                    for (var ipts = 0; ipts < rings[irng].Length; ipts++)
-                    {
-                        await buf.Ensure(16, async);
-                        rings[irng][ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
-                    }
-                }
-                return new PostgisPolygon(rings);
-            }
-
-            case WkbIdentifier.MultiPoint:
-            {
-                await buf.Ensure(4, async);
-                var points = new Coordinate2D[buf.ReadInt32(bo)];
-                for (var ipts = 0; ipts < points.Length; ipts++)
-                {
-                    await buf.Ensure(21, async);
-                    await buf.Skip(5, async);
-                    points[ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
-                }
-                return new PostgisMultiPoint(points);
-            }
-
-            case WkbIdentifier.MultiLineString:
-            {
-                await buf.Ensure(4, async);
-                var rings = new Coordinate2D[buf.ReadInt32(bo)][];
-
-                for (var irng = 0; irng < rings.Length; irng++)
-                {
-                    await buf.Ensure(9, async);
-                    await buf.Skip(5, async);
-                    rings[irng] = new Coordinate2D[buf.ReadInt32(bo)];
-                    for (var ipts = 0; ipts < rings[irng].Length; ipts++)
-                    {
-                        await buf.Ensure(16, async);
-                        rings[irng][ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
-                    }
-                }
-                return new PostgisMultiLineString(rings);
-            }
-
-            case WkbIdentifier.MultiPolygon:
-            {
-                await buf.Ensure(4, async);
-                var pols = new Coordinate2D[buf.ReadInt32(bo)][][];
-
-                for (var ipol = 0; ipol < pols.Length; ipol++)
-                {
-                    await buf.Ensure(9, async);
-                    await buf.Skip(5, async);
-                    pols[ipol] = new Coordinate2D[buf.ReadInt32(bo)][];
-                    for (var irng = 0; irng < pols[ipol].Length; irng++)
+                case WkbIdentifier.LineString:
                     {
                         await buf.Ensure(4, async);
-                        pols[ipol][irng] = new Coordinate2D[buf.ReadInt32(bo)];
-                        for (var ipts = 0; ipts < pols[ipol][irng].Length; ipts++)
+                        var points = new Coordinate2D[buf.ReadInt32(bo)];
+                        for (var ipts = 0; ipts < points.Length; ipts++)
                         {
                             await buf.Ensure(16, async);
-                            pols[ipol][irng][ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
+                            points[ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
                         }
+                        return new PostgisLineString(points);
                     }
-                }
-                return new PostgisMultiPolygon(pols);
-            }
 
-            case WkbIdentifier.GeometryCollection:
-            {
-                await buf.Ensure(4, async);
-                var g = new PostgisGeometry[buf.ReadInt32(bo)];
+                case WkbIdentifier.Polygon:
+                    {
+                        await buf.Ensure(4, async);
+                        var rings = new Coordinate2D[buf.ReadInt32(bo)][];
 
-                for (var i = 0; i < g.Length; i++)
-                {
-                    await buf.Ensure(5, async);
-                    var elemBo = (ByteOrder)buf.ReadByte();
-                    var elemId = (WkbIdentifier)(buf.ReadUInt32(bo) & 7);
+                        for (var irng = 0; irng < rings.Length; irng++)
+                        {
+                            await buf.Ensure(4, async);
+                            rings[irng] = new Coordinate2D[buf.ReadInt32(bo)];
+                            for (var ipts = 0; ipts < rings[irng].Length; ipts++)
+                            {
+                                await buf.Ensure(16, async);
+                                rings[irng][ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
+                            }
+                        }
+                        return new PostgisPolygon(rings);
+                    }
 
-                    g[i] = await DoRead(buf, elemId, elemBo, async);
-                }
-                return new PostgisGeometryCollection(g);
-            }
+                case WkbIdentifier.MultiPoint:
+                    {
+                        await buf.Ensure(4, async);
+                        var points = new Coordinate2D[buf.ReadInt32(bo)];
+                        for (var ipts = 0; ipts < points.Length; ipts++)
+                        {
+                            await buf.Ensure(21, async);
+                            await buf.Skip(5, async);
+                            points[ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
+                        }
+                        return new PostgisMultiPoint(points);
+                    }
 
-            default:
-                throw new InvalidOperationException("Unknown Postgis identifier.");
+                case WkbIdentifier.MultiLineString:
+                    {
+                        await buf.Ensure(4, async);
+                        var rings = new Coordinate2D[buf.ReadInt32(bo)][];
+
+                        for (var irng = 0; irng < rings.Length; irng++)
+                        {
+                            await buf.Ensure(9, async);
+                            await buf.Skip(5, async);
+                            rings[irng] = new Coordinate2D[buf.ReadInt32(bo)];
+                            for (var ipts = 0; ipts < rings[irng].Length; ipts++)
+                            {
+                                await buf.Ensure(16, async);
+                                rings[irng][ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
+                            }
+                        }
+                        return new PostgisMultiLineString(rings);
+                    }
+
+                case WkbIdentifier.MultiPolygon:
+                    {
+                        await buf.Ensure(4, async);
+                        var pols = new Coordinate2D[buf.ReadInt32(bo)][][];
+
+                        for (var ipol = 0; ipol < pols.Length; ipol++)
+                        {
+                            await buf.Ensure(9, async);
+                            await buf.Skip(5, async);
+                            pols[ipol] = new Coordinate2D[buf.ReadInt32(bo)][];
+                            for (var irng = 0; irng < pols[ipol].Length; irng++)
+                            {
+                                await buf.Ensure(4, async);
+                                pols[ipol][irng] = new Coordinate2D[buf.ReadInt32(bo)];
+                                for (var ipts = 0; ipts < pols[ipol][irng].Length; ipts++)
+                                {
+                                    await buf.Ensure(16, async);
+                                    pols[ipol][irng][ipts] = new Coordinate2D(buf.ReadDouble(bo), buf.ReadDouble(bo));
+                                }
+                            }
+                        }
+                        return new PostgisMultiPolygon(pols);
+                    }
+
+                case WkbIdentifier.GeometryCollection:
+                    {
+                        await buf.Ensure(4, async);
+                        var g = new PostgisGeometry[buf.ReadInt32(bo)];
+
+                        for (var i = 0; i < g.Length; i++)
+                        {
+                            await buf.Ensure(5, async);
+                            var elemBo = (ByteOrder)buf.ReadByte();
+                            var elemId = (WkbIdentifier)(buf.ReadUInt32(bo) & 7);
+
+                            g[i] = await DoRead(buf, elemId, elemBo, async);
+                        }
+                        return new PostgisGeometryCollection(g);
+                    }
+
+                default:
+                    throw new InvalidOperationException("Unknown Postgis identifier.");
             }
         }
 
@@ -267,132 +267,132 @@ namespace Npgsql.TypeHandlers
                 if (buf.WriteSpaceLeft < 9)
                     await buf.Flush(async);
                 buf.WriteByte(0);
-                buf.WriteInt32((int) ((uint)value.Identifier | (uint)EwkbModifiers.HasSRID));
-                buf.WriteInt32((int) value.SRID);
+                buf.WriteInt32((int)((uint)value.Identifier | (uint)EwkbModifiers.HasSRID));
+                buf.WriteInt32((int)value.SRID);
             }
 
             switch (value.Identifier)
             {
-            case WkbIdentifier.Point:
-                if (buf.WriteSpaceLeft < 16)
-                    await buf.Flush(async);
-                var p = (PostgisPoint)value;
-                buf.WriteDouble(p.X);
-                buf.WriteDouble(p.Y);
-                return;
-
-            case WkbIdentifier.LineString:
-                var l = (PostgisLineString)value;
-                if (buf.WriteSpaceLeft < 4)
-                    await buf.Flush(async);
-                buf.WriteInt32(l.PointCount);
-                for (var ipts = 0; ipts < l.PointCount; ipts++)
-                {
+                case WkbIdentifier.Point:
                     if (buf.WriteSpaceLeft < 16)
                         await buf.Flush(async);
-                    buf.WriteDouble(l[ipts].X);
-                    buf.WriteDouble(l[ipts].Y);
-                }
-                return;
+                    var p = (PostgisPoint)value;
+                    buf.WriteDouble(p.X);
+                    buf.WriteDouble(p.Y);
+                    return;
 
-            case WkbIdentifier.Polygon:
-                var pol = (PostgisPolygon)value;
-                if (buf.WriteSpaceLeft < 4)
-                    await buf.Flush(async);
-                buf.WriteInt32(pol.RingCount);
-                for (var irng = 0; irng < pol.RingCount; irng++)
-                {
+                case WkbIdentifier.LineString:
+                    var l = (PostgisLineString)value;
                     if (buf.WriteSpaceLeft < 4)
                         await buf.Flush(async);
-                    buf.WriteInt32(pol[irng].Length);
-                    for (var ipts = 0; ipts < pol[irng].Length; ipts++)
+                    buf.WriteInt32(l.PointCount);
+                    for (var ipts = 0; ipts < l.PointCount; ipts++)
                     {
                         if (buf.WriteSpaceLeft < 16)
                             await buf.Flush(async);
-                        buf.WriteDouble(pol[irng][ipts].X);
-                        buf.WriteDouble(pol[irng][ipts].Y);
+                        buf.WriteDouble(l[ipts].X);
+                        buf.WriteDouble(l[ipts].Y);
                     }
-                }
-                return;
+                    return;
 
-            case WkbIdentifier.MultiPoint:
-                var mp = (PostgisMultiPoint)value;
-                if (buf.WriteSpaceLeft < 4)
-                    await buf.Flush(async);
-                buf.WriteInt32(mp.PointCount);
-                for (var ipts = 0; ipts < mp.PointCount; ipts++)
-                {
-                    if (buf.WriteSpaceLeft < 21)
+                case WkbIdentifier.Polygon:
+                    var pol = (PostgisPolygon)value;
+                    if (buf.WriteSpaceLeft < 4)
                         await buf.Flush(async);
-                    buf.WriteByte(0);
-                    buf.WriteInt32((int)WkbIdentifier.Point);
-                    buf.WriteDouble(mp[ipts].X);
-                    buf.WriteDouble(mp[ipts].Y);
-                }
-                return;
-
-            case WkbIdentifier.MultiLineString:
-                var ml = (PostgisMultiLineString)value;
-                if (buf.WriteSpaceLeft < 4)
-                    await buf.Flush(async);
-                buf.WriteInt32(ml.LineCount);
-                for (var irng = 0; irng < ml.LineCount; irng++)
-                {
-                    if (buf.WriteSpaceLeft < 9)
-                        await buf.Flush(async);
-                    buf.WriteByte(0);
-                    buf.WriteInt32((int)WkbIdentifier.LineString);
-                    buf.WriteInt32(ml[irng].PointCount);
-                    for (var ipts = 0; ipts < ml[irng].PointCount; ipts++)
-                    {
-                        if (buf.WriteSpaceLeft < 16)
-                            await buf.Flush(async);
-                        buf.WriteDouble(ml[irng][ipts].X);
-                        buf.WriteDouble(ml[irng][ipts].Y);
-                    }
-                }
-                return;
-
-            case WkbIdentifier.MultiPolygon:
-                var mpl = (PostgisMultiPolygon)value;
-                if (buf.WriteSpaceLeft < 4)
-                    await buf.Flush(async);
-                buf.WriteInt32(mpl.PolygonCount);
-                for (var ipol = 0; ipol < mpl.PolygonCount; ipol++)
-                {
-                    if (buf.WriteSpaceLeft < 9)
-                        await buf.Flush(async);
-                    buf.WriteByte(0);
-                    buf.WriteInt32((int)WkbIdentifier.Polygon);
-                    buf.WriteInt32(mpl[ipol].RingCount);
-                    for (var irng = 0; irng < mpl[ipol].RingCount; irng++)
+                    buf.WriteInt32(pol.RingCount);
+                    for (var irng = 0; irng < pol.RingCount; irng++)
                     {
                         if (buf.WriteSpaceLeft < 4)
                             await buf.Flush(async);
-                        buf.WriteInt32(mpl[ipol][irng].Length);
-                        for (var ipts = 0; ipts < mpl[ipol][irng].Length; ipts++)
+                        buf.WriteInt32(pol[irng].Length);
+                        for (var ipts = 0; ipts < pol[irng].Length; ipts++)
                         {
                             if (buf.WriteSpaceLeft < 16)
                                 await buf.Flush(async);
-                            buf.WriteDouble(mpl[ipol][irng][ipts].X);
-                            buf.WriteDouble(mpl[ipol][irng][ipts].Y);
+                            buf.WriteDouble(pol[irng][ipts].X);
+                            buf.WriteDouble(pol[irng][ipts].Y);
                         }
                     }
-                }
-                return;
+                    return;
 
-            case WkbIdentifier.GeometryCollection:
-                var coll = (PostgisGeometryCollection)value;
-                if (buf.WriteSpaceLeft < 4)
-                    await buf.Flush(async);
-                buf.WriteInt32(coll.GeometryCount);
+                case WkbIdentifier.MultiPoint:
+                    var mp = (PostgisMultiPoint)value;
+                    if (buf.WriteSpaceLeft < 4)
+                        await buf.Flush(async);
+                    buf.WriteInt32(mp.PointCount);
+                    for (var ipts = 0; ipts < mp.PointCount; ipts++)
+                    {
+                        if (buf.WriteSpaceLeft < 21)
+                            await buf.Flush(async);
+                        buf.WriteByte(0);
+                        buf.WriteInt32((int)WkbIdentifier.Point);
+                        buf.WriteDouble(mp[ipts].X);
+                        buf.WriteDouble(mp[ipts].Y);
+                    }
+                    return;
 
-                foreach (var x in coll)
-                    await Write(x, buf, lengthCache, null, async);
-                return;
+                case WkbIdentifier.MultiLineString:
+                    var ml = (PostgisMultiLineString)value;
+                    if (buf.WriteSpaceLeft < 4)
+                        await buf.Flush(async);
+                    buf.WriteInt32(ml.LineCount);
+                    for (var irng = 0; irng < ml.LineCount; irng++)
+                    {
+                        if (buf.WriteSpaceLeft < 9)
+                            await buf.Flush(async);
+                        buf.WriteByte(0);
+                        buf.WriteInt32((int)WkbIdentifier.LineString);
+                        buf.WriteInt32(ml[irng].PointCount);
+                        for (var ipts = 0; ipts < ml[irng].PointCount; ipts++)
+                        {
+                            if (buf.WriteSpaceLeft < 16)
+                                await buf.Flush(async);
+                            buf.WriteDouble(ml[irng][ipts].X);
+                            buf.WriteDouble(ml[irng][ipts].Y);
+                        }
+                    }
+                    return;
 
-            default:
-                throw new InvalidOperationException("Unknown Postgis identifier.");
+                case WkbIdentifier.MultiPolygon:
+                    var mpl = (PostgisMultiPolygon)value;
+                    if (buf.WriteSpaceLeft < 4)
+                        await buf.Flush(async);
+                    buf.WriteInt32(mpl.PolygonCount);
+                    for (var ipol = 0; ipol < mpl.PolygonCount; ipol++)
+                    {
+                        if (buf.WriteSpaceLeft < 9)
+                            await buf.Flush(async);
+                        buf.WriteByte(0);
+                        buf.WriteInt32((int)WkbIdentifier.Polygon);
+                        buf.WriteInt32(mpl[ipol].RingCount);
+                        for (var irng = 0; irng < mpl[ipol].RingCount; irng++)
+                        {
+                            if (buf.WriteSpaceLeft < 4)
+                                await buf.Flush(async);
+                            buf.WriteInt32(mpl[ipol][irng].Length);
+                            for (var ipts = 0; ipts < mpl[ipol][irng].Length; ipts++)
+                            {
+                                if (buf.WriteSpaceLeft < 16)
+                                    await buf.Flush(async);
+                                buf.WriteDouble(mpl[ipol][irng][ipts].X);
+                                buf.WriteDouble(mpl[ipol][irng][ipts].Y);
+                            }
+                        }
+                    }
+                    return;
+
+                case WkbIdentifier.GeometryCollection:
+                    var coll = (PostgisGeometryCollection)value;
+                    if (buf.WriteSpaceLeft < 4)
+                        await buf.Flush(async);
+                    buf.WriteInt32(coll.GeometryCount);
+
+                    foreach (var x in coll)
+                        await Write(x, buf, lengthCache, null, async);
+                    return;
+
+                default:
+                    throw new InvalidOperationException("Unknown Postgis identifier.");
             }
         }
 

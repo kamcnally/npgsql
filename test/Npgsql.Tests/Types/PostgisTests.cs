@@ -111,7 +111,7 @@ namespace Npgsql.Tests.Types
             }
         };
 
-        [Test,TestCaseSource(nameof(Tests))]
+        [Test, TestCaseSource(nameof(Tests))]
         public void PostgisTestRead(TestAtt att)
         {
             using (var conn = OpenConnection())
@@ -130,11 +130,12 @@ namespace Npgsql.Tests.Types
             using (var conn = OpenConnection())
             using (var cmd = conn.CreateCommand())
             {
-                cmd.Parameters.AddWithValue("p1", NpgsqlDbType.Geometry,a.Geom);
+                cmd.Parameters.AddWithValue("p1", NpgsqlDbType.Geometry, a.Geom);
                 a.Geom.SRID = 0;
                 cmd.CommandText = "Select st_asewkb(:p1) = st_asewkb(" + a.SQL + ")";
                 bool areEqual;
-                try {
+                try
+                {
                     areEqual = (bool)cmd.ExecuteScalar();
                 }
                 catch (Exception e)
@@ -153,7 +154,7 @@ namespace Npgsql.Tests.Types
             {
                 cmd.Parameters.AddWithValue("p1", NpgsqlDbType.Geometry, a.Geom);
                 a.Geom.SRID = 3942;
-                cmd.CommandText = "Select st_asewkb(:p1) = st_asewkb(st_setsrid("+ a.SQL + ",3942))";
+                cmd.CommandText = "Select st_asewkb(:p1) = st_asewkb(st_setsrid(" + a.SQL + ",3942))";
                 var p = (bool)cmd.ExecuteScalar();
                 Assert.IsTrue(p);
             }
@@ -223,7 +224,8 @@ namespace Npgsql.Tests.Types
                         new Coordinate2D(20, 35)
                     }
                 })
-            }) { SRID = 4326 };
+            })
+            { SRID = 4326 };
             using (var conn = OpenConnection())
             using (var command = conn.CreateCommand())
             {
@@ -300,14 +302,14 @@ namespace Npgsql.Tests.Types
                 {
                     using (var rdr = c.BeginBinaryExport($"COPY testcopybin (g) TO STDOUT (FORMAT BINARY) "))
                     {
-                        for (var i =0; i < 1000; i++)
+                        for (var i = 0; i < 1000; i++)
                         {
                             rdr.StartRow();
                             Assert.IsTrue(a.Geom.Equals(rdr.Read<PostgisGeometry>()));
                         }
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Assert.Fail($"Copy from stdout failed with {e} at geometry {a.Geom}.");
                 }
@@ -332,7 +334,7 @@ namespace Npgsql.Tests.Types
                         writer.Commit();
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Assert.Fail($"Copy from stdin failed with {e} at geometry {a.Geom}.");
                 }
@@ -346,7 +348,7 @@ namespace Npgsql.Tests.Types
                             Assert.IsTrue(t.SequenceEqual(rdr.Read<PostgisGeometry[]>()));
                         }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Assert.Fail($"Copy to stdout failed with {e} at geometry {a.Geom}.");
                 }
@@ -399,7 +401,8 @@ namespace Npgsql.Tests.Types
                         })
                         // This is the problem:
                         { SRID = 4326 }
-                }) { SRID = 4326 };
+                })
+                { SRID = 4326 };
 
                 cmd.ExecuteNonQuery();
             }
