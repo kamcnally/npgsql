@@ -173,7 +173,7 @@ namespace NpgsqlTypes
     /// <summary>
     /// A structure representing a XYM double precision floating point coordinate;
     /// </summary>
-    public class CoordinateXYM : CoordinateXY, IEquatable<CoordinateXYM>
+    public class CoordinateXYM : Coordinate2D, IEquatable<CoordinateXYM>
     {
         /// <summary>
         /// M coordinate.
@@ -209,7 +209,7 @@ namespace NpgsqlTypes
     /// <summary>
     /// A structure representing a XYZM double precision floating point coordinate;
     /// </summary>
-    public class CoordinateXYZM : CoordinateXY, IEquatable<CoordinateXYZM>
+    public class CoordinateXYZM : Coordinate2D, IEquatable<CoordinateXYZM>
     {
         /// <summary>
         /// Z coordinate.
