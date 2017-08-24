@@ -460,7 +460,7 @@ namespace Npgsql.TypeHandlers
             }
         }
 
-        async ValueTask<PostgisGeometry<CoordinateXYZM>> DoReadXYZM(NpgsqlReadBuffer buf, WkbIdentifier id, ByteOrder bo, bool async)
+        async ValueTask<PostgisGeometry<Coordinate4D>> DoReadXYZM(NpgsqlReadBuffer buf, WkbIdentifier id, ByteOrder bo, bool async)
         {
             switch (id)
             {
@@ -471,11 +471,11 @@ namespace Npgsql.TypeHandlers
                 case WkbIdentifier.LineStringZM:
                     {
                         await buf.Ensure(4, async);
-                        var points = new CoordinateXYZM[buf.ReadInt32(bo)];
+                        var points = new Coordinate4D[buf.ReadInt32(bo)];
                         for (var ipts = 0; ipts < points.Length; ipts++)
                         {
                             await buf.Ensure(32, async);
-                            points[ipts] = new CoordinateXYZM(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
+                            points[ipts] = new Coordinate4D(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                         }
                         return new PostgisLineStringZM(points);
                     }
@@ -483,16 +483,16 @@ namespace Npgsql.TypeHandlers
                 case WkbIdentifier.PolygonZM:
                     {
                         await buf.Ensure(4, async);
-                        var rings = new CoordinateXYZM[buf.ReadInt32(bo)][];
+                        var rings = new Coordinate4D[buf.ReadInt32(bo)][];
 
                         for (var irng = 0; irng < rings.Length; irng++)
                         {
                             await buf.Ensure(4, async);
-                            rings[irng] = new CoordinateXYZM[buf.ReadInt32(bo)];
+                            rings[irng] = new Coordinate4D[buf.ReadInt32(bo)];
                             for (var ipts = 0; ipts < rings[irng].Length; ipts++)
                             {
                                 await buf.Ensure(32, async);
-                                rings[irng][ipts] = new CoordinateXYZM(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
+                                rings[irng][ipts] = new Coordinate4D(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                             }
                         }
                         return new PostgisPolygonZM(rings);
@@ -501,12 +501,12 @@ namespace Npgsql.TypeHandlers
                 case WkbIdentifier.MultiPointZM:
                     {
                         await buf.Ensure(4, async);
-                        var points = new CoordinateXYZM[buf.ReadInt32(bo)];
+                        var points = new Coordinate4D[buf.ReadInt32(bo)];
                         for (var ipts = 0; ipts < points.Length; ipts++)
                         {
                             await buf.Ensure(37, async);
                             await buf.Skip(5, async);
-                            points[ipts] = new CoordinateXYZM(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
+                            points[ipts] = new Coordinate4D(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                         }
                         return new PostgisMultiPointZM(points);
                     }
@@ -514,17 +514,17 @@ namespace Npgsql.TypeHandlers
                 case WkbIdentifier.MultiLineStringZM:
                     {
                         await buf.Ensure(4, async);
-                        var rings = new CoordinateXYZM[buf.ReadInt32(bo)][];
+                        var rings = new Coordinate4D[buf.ReadInt32(bo)][];
 
                         for (var irng = 0; irng < rings.Length; irng++)
                         {
                             await buf.Ensure(9, async);
                             await buf.Skip(5, async);
-                            rings[irng] = new CoordinateXYZM[buf.ReadInt32(bo)];
+                            rings[irng] = new Coordinate4D[buf.ReadInt32(bo)];
                             for (var ipts = 0; ipts < rings[irng].Length; ipts++)
                             {
                                 await buf.Ensure(32, async);
-                                rings[irng][ipts] = new CoordinateXYZM(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
+                                rings[irng][ipts] = new Coordinate4D(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                             }
                         }
                         return new PostgisMultiLineStringZM(rings);
@@ -533,21 +533,21 @@ namespace Npgsql.TypeHandlers
                 case WkbIdentifier.MultiPolygonZM:
                     {
                         await buf.Ensure(4, async);
-                        var pols = new CoordinateXYZM[buf.ReadInt32(bo)][][];
+                        var pols = new Coordinate4D[buf.ReadInt32(bo)][][];
 
                         for (var ipol = 0; ipol < pols.Length; ipol++)
                         {
                             await buf.Ensure(9, async);
                             await buf.Skip(5, async);
-                            pols[ipol] = new CoordinateXYZM[buf.ReadInt32(bo)][];
+                            pols[ipol] = new Coordinate4D[buf.ReadInt32(bo)][];
                             for (var irng = 0; irng < pols[ipol].Length; irng++)
                             {
                                 await buf.Ensure(4, async);
-                                pols[ipol][irng] = new CoordinateXYZM[buf.ReadInt32(bo)];
+                                pols[ipol][irng] = new Coordinate4D[buf.ReadInt32(bo)];
                                 for (var ipts = 0; ipts < pols[ipol][irng].Length; ipts++)
                                 {
                                     await buf.Ensure(32, async);
-                                    pols[ipol][irng][ipts] = new CoordinateXYZM(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
+                                    pols[ipol][irng][ipts] = new Coordinate4D(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                                 }
                             }
                         }
@@ -557,7 +557,7 @@ namespace Npgsql.TypeHandlers
                 case WkbIdentifier.GeometryCollectionZM:
                     {
                         await buf.Ensure(4, async);
-                        var g = new PostgisGeometry<CoordinateXYZM>[buf.ReadInt32(bo)];
+                        var g = new PostgisGeometry<Coordinate4D>[buf.ReadInt32(bo)];
 
                         for (var i = 0; i < g.Length; i++)
                         {
@@ -1341,25 +1341,25 @@ namespace Npgsql.TypeHandlers
 
         //4D Geometry
         public Task Write(PostgisPointZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(PostgisMultiPointZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(PostgisLineStringZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(PostgisMultiLineStringZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(PostgisPolygonZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(PostgisMultiPolygonZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(PostgisGeometryCollectionZM value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
-            => Write((PostgisGeometry<CoordinateXYZM>)value, buf, lengthCache, parameter, async);
+            => Write((PostgisGeometry<Coordinate4D>)value, buf, lengthCache, parameter, async);
 
         public Task Write(byte[] value, NpgsqlWriteBuffer buf, NpgsqlLengthCache lengthCache, NpgsqlParameter parameter, bool async)
             => _byteaHandler == null

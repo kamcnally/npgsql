@@ -209,7 +209,7 @@ namespace NpgsqlTypes
     /// <summary>
     /// A structure representing a XYZM double precision floating point coordinate;
     /// </summary>
-    public class CoordinateXYZM : Coordinate2D, IEquatable<CoordinateXYZM>
+    public class Coordinate4D : Coordinate2D, IEquatable<Coordinate4D>
     {
         /// <summary>
         /// Z coordinate.
@@ -228,10 +228,10 @@ namespace NpgsqlTypes
         /// <param name="y">Y coordinate</param>
         /// <param name="z">Z coordinate</param>
         /// <param name="m">M coordinate</param>
-        public CoordinateXYZM(double x, double y, double z, double m) : base(x, y) { Z = z; M = m; }
+        public Coordinate4D(double x, double y, double z, double m) : base(x, y) { Z = z; M = m; }
 
         // ReSharper disable CompareOfFloatsByEqualityOperator
-        public bool Equals(CoordinateXYZM other)
+        public bool Equals(Coordinate4D other)
             => Z == other.Z && M == other.M && base.Equals(other);
         // ReSharper restore CompareOfFloatsByEqualityOperator
 
@@ -239,12 +239,12 @@ namespace NpgsqlTypes
             => M.GetHashCode() ^ base.GetHashCode();
 
         public override bool Equals([CanBeNull] object obj)
-            => obj is CoordinateXYZM && Equals((CoordinateXYZM)obj);
+            => obj is Coordinate4D && Equals((Coordinate4D)obj);
 
-        public static bool operator ==(CoordinateXYZM left, CoordinateXYZM right)
+        public static bool operator ==(Coordinate4D left, Coordinate4D right)
             => Equals(left, right);
 
-        public static bool operator !=(CoordinateXYZM left, CoordinateXYZM right)
+        public static bool operator !=(Coordinate4D left, Coordinate4D right)
             => !Equals(left, right);
     }
 
@@ -389,16 +389,16 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents an Postgis 4D Point
     /// </summary>
-    public class PostgisPointZM : PostgisPoint<CoordinateXYZM>, IEquatable<PostgisPointZM>
+    public class PostgisPointZM : PostgisPoint<Coordinate4D>, IEquatable<PostgisPointZM>
     {
-        CoordinateXYZM _coord;
+        Coordinate4D _coord;
 
         internal override WkbIdentifier Identifier => WkbIdentifier.PointZM;
         protected override int GetLenHelper() => 32;
 
         public PostgisPointZM(double x, double y, double z, double m)
         {
-            _coord = new CoordinateXYZM(x, y, z, m);
+            _coord = new Coordinate4D(x, y, z, m);
         }
 
         public double X => _coord.X;
@@ -528,17 +528,17 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a 4D LineString
     /// </summary>
-    public class PostgisLineStringZM : PostgisLineString<CoordinateXYZM>
+    public class PostgisLineStringZM : PostgisLineString<Coordinate4D>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.LineStringZM;
         protected override int GetLenHelper() => 4 + _points.Length * 32;
 
-        public PostgisLineStringZM(IEnumerable<CoordinateXYZM> points)
+        public PostgisLineStringZM(IEnumerable<Coordinate4D> points)
         {
             _points = points.ToArray();
         }
 
-        public PostgisLineStringZM(CoordinateXYZM[] points)
+        public PostgisLineStringZM(Coordinate4D[] points)
         {
             _points = points;
         }
@@ -655,17 +655,17 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents an Postgis 4D Polygon.
     /// </summary>
-    public class PostgisPolygonZM : PostgisPolygon<CoordinateXYZM>
+    public class PostgisPolygonZM : PostgisPolygon<Coordinate4D>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.PolygonZM;
         protected override int GetLenHelper() => 4 + _rings.Length * 4 + TotalPointCount * 32;
 
-        public PostgisPolygonZM(CoordinateXYZM[][] rings)
+        public PostgisPolygonZM(Coordinate4D[][] rings)
         {
             _rings = rings;
         }
 
-        public PostgisPolygonZM(IEnumerable<IEnumerable<CoordinateXYZM>> rings)
+        public PostgisPolygonZM(IEnumerable<IEnumerable<Coordinate4D>> rings)
         {
             _rings = rings.Select(x => x.ToArray()).ToArray();
         }
@@ -793,24 +793,24 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a Postgis 4D MultiPoint
     /// </summary>
-    public class PostgisMultiPointZM : PostgisMultiPoint<CoordinateXYZM>
+    public class PostgisMultiPointZM : PostgisMultiPoint<Coordinate4D>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.MultiPointZM;
 
         //each point of a multipoint is a postgispoint, not a building block point.
         protected override int GetLenHelper() => 4 + _points.Length * 37;
 
-        public PostgisMultiPointZM(CoordinateXYZM[] points)
+        public PostgisMultiPointZM(Coordinate4D[] points)
         {
             _points = points;
         }
 
-        public PostgisMultiPointZM(IEnumerable<PostgisPoint<CoordinateXYZM>> points)
+        public PostgisMultiPointZM(IEnumerable<PostgisPoint<Coordinate4D>> points)
         {
-            _points = points.Select(x => x.Coordinate).OfType<CoordinateXYZM>().ToArray();
+            _points = points.Select(x => x.Coordinate).OfType<Coordinate4D>().ToArray();
         }
 
-        public PostgisMultiPointZM(IEnumerable<CoordinateXYZM> points)
+        public PostgisMultiPointZM(IEnumerable<Coordinate4D> points)
         {
             _points = points.ToArray();
         }
@@ -957,9 +957,9 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a Postgis 4D MultiLineString
     /// </summary>
-    public sealed class PostgisMultiLineStringZM : PostgisMultiLineString<CoordinateXYZM>
+    public sealed class PostgisMultiLineStringZM : PostgisMultiLineString<Coordinate4D>
     {
-        internal PostgisMultiLineStringZM(CoordinateXYZM[][] pointArray)
+        internal PostgisMultiLineStringZM(Coordinate4D[][] pointArray)
         {
             _lineStrings = new PostgisLineStringZM[pointArray.Length];
             for (var i = 0; i < pointArray.Length; i++)
@@ -978,7 +978,7 @@ namespace NpgsqlTypes
             _lineStrings = linestrings.ToArray();
         }
 
-        public PostgisMultiLineStringZM(IEnumerable<IEnumerable<CoordinateXYZM>> pointList)
+        public PostgisMultiLineStringZM(IEnumerable<IEnumerable<Coordinate4D>> pointList)
         {
             _lineStrings = pointList.Select(x => new PostgisLineStringZM(x)).ToArray();
         }
@@ -1104,7 +1104,7 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a Postgis 4D MultiPolygon.
     /// </summary>
-    public class PostgisMultiPolygonZM : PostgisMultiPolygon<CoordinateXYZM>
+    public class PostgisMultiPolygonZM : PostgisMultiPolygon<Coordinate4D>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.MultiPolygonZM;
 
@@ -1118,7 +1118,7 @@ namespace NpgsqlTypes
             _polygons = polygons.ToArray();
         }
 
-        public PostgisMultiPolygonZM(IEnumerable<IEnumerable<IEnumerable<CoordinateXYZM>>> ringList)
+        public PostgisMultiPolygonZM(IEnumerable<IEnumerable<IEnumerable<Coordinate4D>>> ringList)
         {
             _polygons = ringList.Select(x => new PostgisPolygonZM(x)).ToArray();
         }
@@ -1228,16 +1228,16 @@ namespace NpgsqlTypes
     /// <summary>
     /// Represents a collection of 4D Postgis feature.
     /// </summary>
-    public class PostgisGeometryCollectionZM : PostgisGeometryCollection<CoordinateXYZM>
+    public class PostgisGeometryCollectionZM : PostgisGeometryCollection<Coordinate4D>
     {
         internal override WkbIdentifier Identifier => WkbIdentifier.GeometryCollectionZM;
 
-        public PostgisGeometryCollectionZM(PostgisGeometry<CoordinateXYZM>[] geometries)
+        public PostgisGeometryCollectionZM(PostgisGeometry<Coordinate4D>[] geometries)
         {
             _geometries = geometries;
         }
 
-        public PostgisGeometryCollectionZM(IEnumerable<PostgisGeometry<CoordinateXYZM>> geometries)
+        public PostgisGeometryCollectionZM(IEnumerable<PostgisGeometry<Coordinate4D>> geometries)
         {
             _geometries = geometries.ToArray();
         }
