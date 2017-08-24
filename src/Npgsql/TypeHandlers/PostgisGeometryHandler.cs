@@ -448,7 +448,7 @@ namespace Npgsql.TypeHandlers
                         {
                             await buf.Ensure(5, async);
                             var elemBo = (ByteOrder)buf.ReadByte();
-                            var elemId = (WkbIdentifier)(buf.ReadUInt32(bo) & 7);
+                            var elemId = (WkbIdentifier)((buf.ReadUInt32(bo) & 7) + 2000);
 
                             g[i] = await DoReadXYM(buf, elemId, elemBo, async);
                         }
