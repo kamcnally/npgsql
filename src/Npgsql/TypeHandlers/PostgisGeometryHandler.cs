@@ -226,7 +226,7 @@ namespace Npgsql.TypeHandlers
                         var points = new CoordinateXYZ[buf.ReadInt32(bo)];
                         for (var ipts = 0; ipts < points.Length; ipts++)
                         {
-                            await buf.Ensure(16, async);
+                            await buf.Ensure(24, async);
                             points[ipts] = new CoordinateXYZ(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                         }
                         return new PostgisLineStringZ(points);
@@ -256,7 +256,7 @@ namespace Npgsql.TypeHandlers
                         var points = new CoordinateXYZ[buf.ReadInt32(bo)];
                         for (var ipts = 0; ipts < points.Length; ipts++)
                         {
-                            await buf.Ensure(21, async);
+                            await buf.Ensure(29, async);
                             await buf.Skip(5, async);
                             points[ipts] = new CoordinateXYZ(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                         }
@@ -275,7 +275,7 @@ namespace Npgsql.TypeHandlers
                             rings[irng] = new CoordinateXYZ[buf.ReadInt32(bo)];
                             for (var ipts = 0; ipts < rings[irng].Length; ipts++)
                             {
-                                await buf.Ensure(16, async);
+                                await buf.Ensure(24, async);
                                 rings[irng][ipts] = new CoordinateXYZ(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                             }
                         }
@@ -298,7 +298,7 @@ namespace Npgsql.TypeHandlers
                                 pols[ipol][irng] = new CoordinateXYZ[buf.ReadInt32(bo)];
                                 for (var ipts = 0; ipts < pols[ipol][irng].Length; ipts++)
                                 {
-                                    await buf.Ensure(16, async);
+                                    await buf.Ensure(24, async);
                                     pols[ipol][irng][ipts] = new CoordinateXYZ(buf.ReadDouble(bo), buf.ReadDouble(bo), buf.ReadDouble(bo));
                                 }
                             }
